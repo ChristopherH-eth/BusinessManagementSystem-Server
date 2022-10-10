@@ -9,6 +9,7 @@
 /**
  * @file TcpListener.cpp
  * @author 0xChristopher
+ * @brief
  */
 
 /**
@@ -17,7 +18,8 @@
 TcpListener::TcpListener(std::string ipAddress, int port, MessageReceivedHandler handler) 
 	: m_ipAddress(ipAddress), m_port(port), m_handler(handler)
 {
-
+	// m_running set to false until successful server startup
+	this->m_running = false;
 }
 
 TcpListener::~TcpListener()
@@ -38,20 +40,23 @@ void TcpListener::Send(int clientSocket, std::string msg)
  */
 bool TcpListener::Init() 
 {
-	std::cout << "Initializing WinSock..." << std::endl;
+	std::cout << "Initializing WinSock... ";
 
 	WSAData data;
 	WORD ver = MAKEWORD(2, 2);
 
 	int wsInit = WSAStartup(ver, &data);
 
+	// Check if WinSock was successfully initialized
 	if (wsInit != 0)
 	{
-		std::cerr << "Can't initialize winsock. Exiting program..." << std::endl;
+		std::cerr << "\nCan't initialize winsock. Exiting program..." << std::endl;
+
 		return false;
 	}
 
 	std::cout << "WinSock initialized" << std::endl;
+
 	return true;
 }
 
@@ -60,50 +65,106 @@ bool TcpListener::Init()
  */
 void TcpListener::Run()
 {
+	// Create listening socket
+	SOCKET listening = CreateSocket();
+
+	// Check if listening socket was created successfully
+	if (listening == INVALID_SOCKET)
+	{
+		std::cerr << "Can't create socket. Exitting program..." << std::endl;
+		return;
+	}
+
 	std::cout << "\nServer startup successful!\n" << std::endl;
 
+	// Set running to 'true' on successful startup
+	m_running = true;
+
+	// Initialize our master file descriptor set
+	fd_set master;
+	FD_ZERO(&master);
+	FD_SET(listening, &master);
+
+	// Max buffer for messages
 	char buf[MAX_BUFFER_SIZE];
 
-	while (true)
+	// Main running loop
+	while (m_running)
 	{
-		/// Create listening socket
-		SOCKET listening = CreateSocket();
+		// Copy our master file descriptor set to work with
+		fd_set copy = master;
+		
+		int socketCount = select(0, &copy, nullptr, nullptr, nullptr);
 
-		if (listening == INVALID_SOCKET)
-			break;
-
-		/// Listen for client connection
-		SOCKET client = WaitForConnection(listening);
-
-		if (client != INVALID_SOCKET)
+		// Iterate through available sockets
+		for (int i = 0; i < socketCount; i++)
 		{
-			/// Stop listening if we have a connection
-			closesocket(listening);
-			int bytesReceived = 0;
+			SOCKET s = copy.fd_array[i];
 
-			do
+			// Make sure we're using a valid socket
+			if (s != INVALID_SOCKET)
 			{
-				ZeroMemory(buf, MAX_BUFFER_SIZE);
-				/// Wait for client to send data
-				bytesReceived = recv(client, buf, MAX_BUFFER_SIZE, 0);
-
-				if (bytesReceived > 0)
+				// Check if the current socket is listening
+				if (s == listening)
 				{
-					/// Handle incoming message
-					if (m_handler != nullptr)
-					{
-						std::cout << "Client connected" << std::endl;
+					// Listen for client connection and add connection to list of connected clients
+					SOCKET client = WaitForConnection(listening);
+					FD_SET(client, &master);
 
-						m_handler(this, client, std::string(buf, 0, bytesReceived));
+					std::cout << "Client connected on port" << std::endl;
+
+					// Send welcome message to connected client
+					std::string welcomeMsg = "Connected to Business Management Server!";
+					Send(client, welcomeMsg);
+				}
+				else
+				{
+					int bytesReceived = 0;
+
+					ZeroMemory(buf, MAX_BUFFER_SIZE);
+
+					// Wait for client to send data
+					bytesReceived = recv(s, buf, MAX_BUFFER_SIZE, 0);
+
+					// Check if client is disconnecting
+					if (buf[0] == 'e')
+					{
+						std::string input = std::string(buf, bytesReceived);
+
+						if (input == "exit")
+						{
+							// Disconnect from client and remove from list of connected clients
+							closesocket(s);
+							FD_CLR(s, &master);
+
+							std::cout << "Client disconnected" << std::endl;
+						}
+					}
+					else if (bytesReceived > 0)
+					{
+						// Handle incoming message
+						if (m_handler != nullptr)
+							m_handler(this, s, std::string(buf, 0, bytesReceived));
 					}
 				}
-			} 
-			while (bytesReceived > 0);
+			}
 		}
-
-		/// Disconnect from client
-		closesocket(client);
 	}
+	
+	// Remove listening socket to prevent further connections
+	FD_CLR(listening, &master);	
+	closesocket(listening);	
+
+	// Close sockets and shutdown the server
+	while (master.fd_count > 0)
+	{
+		SOCKET s = master.fd_array[0];
+		FD_CLR(s, &master);
+		closesocket(s);
+	}
+
+	Cleanup();
+	system("pause");
 }
 
 /**
@@ -125,21 +186,22 @@ SOCKET TcpListener::CreateSocket()
 
 	SOCKET listening = socket(AF_INET, SOCK_STREAM, 0);
 
+	// Make sure our listening socket is valid
 	if (listening != INVALID_SOCKET)
 	{
-		/// Bind ip address and port to socket
+		// Bind ip address and port to socket
 		sockaddr_in hint;
 		hint.sin_family = AF_INET;
 		hint.sin_port = htons(m_port);
 		inet_pton(AF_INET, m_ipAddress.c_str(), &hint.sin_addr);
 
-		std::cout << "Binding ip address and port..." << std::endl;
+		std::cout << "Binding ip address and port... ";
 
 		int bindOk = bind(listening, (sockaddr*)&hint, sizeof(hint));
 
 		if (bindOk != SOCKET_ERROR)
 		{
-			/// Listen with the newly created socket
+			// Listen with the newly created socket
 			int listenOk = listen(listening, SOMAXCONN);
 
 			if (listenOk == SOCKET_ERROR)
@@ -161,7 +223,7 @@ SOCKET TcpListener::CreateSocket()
  */
 SOCKET TcpListener::WaitForConnection(SOCKET listening)
 {
-	std::cout << "\nWaiting for client connection..." << std::endl;
+	std::cout << "\nWaiting for client connection...\n" << std::endl;
 
 	SOCKET client = accept(listening, nullptr, nullptr);
 
