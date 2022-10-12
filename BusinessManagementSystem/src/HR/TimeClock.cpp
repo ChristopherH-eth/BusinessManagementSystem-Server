@@ -3,6 +3,7 @@
 /**
  * @file TimeClock.cpp
  * @author 0xChristopher
+ * @brief Source file for the TimeClock class
  */
 
 namespace BMS

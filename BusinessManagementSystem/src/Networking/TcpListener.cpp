@@ -9,7 +9,7 @@
 /**
  * @file TcpListener.cpp
  * @author 0xChristopher
- * @brief
+ * @brief Source file for the TcpListener class
  */
 
 /**
@@ -111,7 +111,7 @@ void TcpListener::Run()
 					SOCKET client = WaitForConnection(listening);
 					FD_SET(client, &master);
 
-					std::cout << "Client connected on port" << std::endl;
+					std::cout << "Client connected" << std::endl;
 
 					// Send welcome message to connected client
 					std::string welcomeMsg = "Connected to Business Management Server!";
@@ -126,11 +126,12 @@ void TcpListener::Run()
 					// Wait for client to send data
 					bytesReceived = recv(s, buf, MAX_BUFFER_SIZE, 0);
 
-					// Check if client is disconnecting
+					// Check if we've received a command
 					if (buf[0] == 'e')
 					{
 						std::string input = std::string(buf, bytesReceived);
 
+						// Check if client is disconnecting
 						if (input == "exit")
 						{
 							// Disconnect from client and remove from list of connected clients

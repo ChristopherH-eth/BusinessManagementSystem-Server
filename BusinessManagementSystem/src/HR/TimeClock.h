@@ -6,6 +6,7 @@
 /**
  * @file TimeClock.h
  * @author 0xChristopher
+ * @brief
  */
 
 namespace BMS

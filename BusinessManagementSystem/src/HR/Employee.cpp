@@ -4,6 +4,7 @@
 /**
  * @file Employee.cpp
  * @author 0xChristopher
+ * @brief Source file for the Employee class
  */
 
 namespace BMS
