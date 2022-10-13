@@ -1,7 +1,8 @@
 #include <iostream>
 #include <string>
-
+#include <nlohmann/json.hpp>
 #include "Handler.h"
+#include "../HR/Employee.h"
 
 /**
  * @file Handler.cpp
@@ -28,7 +29,9 @@ Handler::~Handler()
 */
 std::string Handler::DirectInput(std::string msg)
 {
+	bool success;
 	std::string response;
+	nlohmann::json newJson;
 
 	enum inputFunction
 	{
@@ -38,8 +41,10 @@ std::string Handler::DirectInput(std::string msg)
 	};
 
 	std::string inputStr = msg.substr(0, 3);
+	std::string getJson = msg.substr(4);
 
 	int input = stoi(inputStr);
+	newJson = nlohmann::json::parse(getJson);
 
 	std::cout << "Function: " << input << "\n" << std::endl;
 
@@ -47,14 +52,35 @@ std::string Handler::DirectInput(std::string msg)
 	{
 	case 100:
 		std::cout << "Called addEmployee() function" << std::endl;
+		std::cout << "Generated JSON object: " << newJson << std::endl;
+
+		success = BMS::Employee::AddEmployee(newJson);
+
+		// Check if employee was added successfully
+		if (success)
+			std::cout << "Employee added!" << std::endl;
+		else
+			std::cout << "Failed to add employee" << std::endl;
+
 		response = "addEmployee function called";
 		break;
 	case 101:
 		std::cout << "Called removeEmployee() function" << std::endl;
+		std::cout << "Generated JSON object: " << newJson << std::endl;
 		response = "removeEmployee function called";
 		break;
 	case 102:
 		std::cout << "Called updateEmployee() function" << std::endl;
+		std::cout << "Generated JSON object: " << newJson << std::endl;
+
+		success = BMS::Employee::UpdateEmployee(newJson);
+
+		// Check if employee was updated successfully
+		if (success)
+			std::cout << "Employee added!" << std::endl;
+		else
+			std::cout << "Failed to add employee" << std::endl;
+
 		response = "updateEmployee function called";
 		break;
 	default:

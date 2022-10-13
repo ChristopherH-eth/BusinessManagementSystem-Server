@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <nlohmann/json.hpp>
 #include "../Core.h"
 
 /**
@@ -18,26 +19,37 @@ namespace BMS
 	private:
 		std::string m_firstName, m_lastName, m_birthDate, m_position;
 		int m_age, m_id;
-		float m_wage;
+		float m_salary;
 
 	public:
+		/**
+		 * @brief Employee constructor and destructor
+		 */
 		Employee(std::string& firstName, std::string& lastName, std::string& birthDate, std::string& position,
-			int age, int id)
-			: m_firstName(firstName), m_lastName(lastName), m_birthDate(birthDate), m_position(position),
-			m_age(age), m_id(id) 
-		{
+			float salary, int age, int id);
 
-		}
+		~Employee();
 
-		~Employee() 
-		{
+		/**
+		 * @brief The AddEmployee() function adds an employee to the database
+		 * @param employee The JSON object representing an employee
+		 * @return Returns true upon successfully adding the employee
+		 */
+		bool static AddEmployee(nlohmann::json employee);
 
-		}
+		/**
+		 * @brief The RemoveEmployee() function removes an employee from the database
+		 * @param id The employee's id number
+		 * @return Returns true upon successfully removing the employee
+		 */
+		bool static RemoveEmployee(int id);
 
-		void AddEmployee(std::string& firstName, std::string& lastName, std::string& birthDate,
-			std::string& position, int age, int id);
-
-		void RemoveEmployee(int id);
+		/**
+		 * @brief The UpdateEmployee() function adds an employee to the database
+		 * @param employee The JSON object representing an employee
+		 * @return Returns true upon successfully adding the employee
+		 */
+		bool static UpdateEmployee(nlohmann::json employee);
 
 	};
 
