@@ -5,12 +5,16 @@
 
 #pragma comment (lib, "ws2_32.lib")
 
-#define MAX_BUFFER_SIZE (49152)
+#define MAX_BUFFER_SIZE (49152)		// Max buffer for receiving client requests
 
 /**
  * @file TcpListener.h
  * @author 0xChristopher
- * @brief
+ * @brief The TcpListener class takes care of client facing operations. This includes allowing client
+ *		connections to the server, moderating those connections, disconnecting clients from the server,
+ *		and cleaning up server resources upon server shutdown. This class also takes incoming requests from
+ *		clients, sends them to the Handler class object if they require handling server side, and when
+ *		necessary sends responses back to the client applications.
  */
 
 // TcpListener class forward declaration
@@ -39,7 +43,7 @@ private:
 	 * @param listening The socket for the server to listen on
 	 * @return Returns the client socket
 	 */
-	SOCKET WaitForConnection(SOCKET listening);
+	SOCKET WaitForConnection(SOCKET& listening);
 
 public:
 	/**
@@ -57,7 +61,7 @@ public:
 	 * @param clientSocket The socket to send the message to
 	 * @param msg The message to be sent
 	 */
-	void Send(int clientSocket, std::string msg);
+	void Send(int clientSocket, std::string& msg);
 
 	/**
 	 * @brief The Init() function initializes WinSock

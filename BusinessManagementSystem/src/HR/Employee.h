@@ -7,7 +7,8 @@
 /**
  * @file Employee.h
  * @author 0xChristopher
- * @brief 
+ * @brief The Employee class allows the creation of employee objects and calls to related functions. It is
+ *		part of the BMS_API.
  */
 
 namespace BMS 
@@ -17,13 +18,24 @@ namespace BMS
 	{
 
 	private:
-		std::string m_firstName, m_lastName, m_birthDate, m_position;
-		int m_age, m_id;
-		float m_salary;
+		std::string m_firstName;		// Employee first name
+		std::string m_lastName;			// Employee last name
+		std::string m_birthDate;		// Employee DOB
+		std::string m_position;			// Current employee position
+		int m_age;						// Employee age
+		int m_id;						// Unique employee id
+		float m_salary;					// Employee salary
 
 	public:
 		/**
 		 * @brief Employee constructor and destructor
+		 * @param firstName The employee's first name
+		 * @param lastName The employee's last name
+		 * @param birthDate The employee's DOB
+		 * @param position The employee's current position
+		 * @param salary The employee's salary
+		 * @param age The employee's age
+		 * @param id The employee's unique id
 		 */
 		Employee(std::string& firstName, std::string& lastName, std::string& birthDate, std::string& position,
 			float salary, int age, int id);

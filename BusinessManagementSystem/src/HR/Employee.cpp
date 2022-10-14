@@ -32,16 +32,16 @@ namespace BMS
 	*/
 	bool Employee::AddEmployee(nlohmann::json employee)
 	{
-		// TODO: process employee details
-
 		Database db;
-		bool dbCon;
-		db.ConnectDB(dbCon);
+		sql::Connection* con = db.ConnectDB();
 
-		if (dbCon)
+		// Make sure we have a valid database connection
+		if (db.ConnectDB())
 			std::cout << "Successfully connected to the database!" << std::endl;
 		else
 			std::cout << "Couldn't connect to the database" << std::endl;
+
+		// TODO: process employee details
 
 		return true;
 	}

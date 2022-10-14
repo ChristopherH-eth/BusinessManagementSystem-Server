@@ -24,13 +24,14 @@ TcpListener::TcpListener(std::string ipAddress, int port, MessageReceivedHandler
 
 TcpListener::~TcpListener()
 {
+	// Cleanup server instance at shutdown
 	Cleanup();
 }
 
 /**
  * @brief The Send() function sends a message back to the client
  */
-void TcpListener::Send(int clientSocket, std::string msg)
+void TcpListener::Send(int clientSocket, std::string& msg)
 {
 	send(clientSocket, msg.c_str(), msg.size() + 1, 0);
 }
@@ -85,7 +86,7 @@ void TcpListener::Run()
 	FD_ZERO(&master);
 	FD_SET(listening, &master);
 
-	// Max buffer for messages
+	// Max buffer for incoming client requests
 	char buf[MAX_BUFFER_SIZE];
 
 	// Main running loop
@@ -141,6 +142,20 @@ void TcpListener::Run()
 							std::cout << "Client disconnected" << std::endl;
 						}
 					}
+					else if (buf[0] == 's')
+					{
+						std::string input = std::string(buf, bytesReceived);
+
+						// Check if the server has been told to shutdown
+						if (input == "shutdown")
+						{
+							std::cout << "Shutdown request received" << std::endl;
+							m_running = false;
+
+							break;
+						}
+					}
+					// We've received a normal request via function id
 					else if (bytesReceived > 0)
 					{
 						// Handle incoming message
@@ -149,8 +164,16 @@ void TcpListener::Run()
 					}
 				}
 			}
+			else
+			{
+				std::cerr << "Invalid socket error. Exiting program..." << std::endl;
+
+				break;
+			}
 		}
 	}
+
+	std::cout << "Shutting down server, please standby" << std::endl;
 	
 	// Remove listening socket to prevent further connections
 	FD_CLR(listening, &master);	
@@ -164,6 +187,8 @@ void TcpListener::Run()
 		closesocket(s);
 	}
 
+	std::cout << "Cleaning up server instance..." << std::endl;
+
 	Cleanup();
 	system("pause");
 }
@@ -173,8 +198,6 @@ void TcpListener::Run()
  */
 void TcpListener::Cleanup()
 {
-	std::cout << "Cleaning up server instance..." << std::endl;
-
 	WSACleanup();
 }
 
@@ -222,9 +245,9 @@ SOCKET TcpListener::CreateSocket()
 /**
  * @brief The WaitForConnection() function waits for a client connection
  */
-SOCKET TcpListener::WaitForConnection(SOCKET listening)
+SOCKET TcpListener::WaitForConnection(SOCKET& listening)
 {
-	std::cout << "\nWaiting for client connection...\n" << std::endl;
+	std::cout << "\nWaiting for client connection..." << std::endl;
 
 	SOCKET client = accept(listening, nullptr, nullptr);
 

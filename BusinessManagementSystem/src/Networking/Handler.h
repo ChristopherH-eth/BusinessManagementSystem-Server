@@ -5,7 +5,10 @@
 /**
  * @file Handler.h
  * @author 0xChristopher
- * @brief
+ * @brief The Handler class is responsible for taking incoming requests from clients via the TcpListener,
+ *		and directs those requests to the appropriate module for processing. An example of this would be
+ *		employee salary changes provided by the HR manager that need to be updated in the employee database
+ *		table, so that payroll and compensation lookups return accurate data.
  */
 
 class Handler
