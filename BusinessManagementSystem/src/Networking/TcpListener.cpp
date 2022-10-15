@@ -3,6 +3,7 @@
 #include <WS2tcpip.h>
 
 #include "TcpListener.h"
+#include "../Log/Log.h"
 
 #pragma comment (lib, "ws2_32.lib")
 
@@ -41,7 +42,7 @@ void TcpListener::Send(int clientSocket, std::string& msg)
  */
 bool TcpListener::Init() 
 {
-	std::cout << "Initializing WinSock... ";
+	BMS_TRACE("Initializing WinSock... ");
 
 	WSAData data;
 	WORD ver = MAKEWORD(2, 2);
@@ -51,12 +52,12 @@ bool TcpListener::Init()
 	// Check if WinSock was successfully initialized
 	if (wsInit != 0)
 	{
-		std::cerr << "\nCan't initialize winsock. Exiting program..." << std::endl;
+		BMS_ERROR("\nCan't initialize winsock. Exiting program...");
 
 		return false;
 	}
 
-	std::cout << "WinSock initialized" << std::endl;
+	BMS_INFO("WinSock initialized");
 
 	return true;
 }
@@ -72,11 +73,11 @@ void TcpListener::Run()
 	// Check if listening socket was created successfully
 	if (listening == INVALID_SOCKET)
 	{
-		std::cerr << "Can't create socket. Exitting program..." << std::endl;
+		BMS_ERROR("Can't create socket. Exitting program...");
 		return;
 	}
 
-	std::cout << "\nServer startup successful!\n" << std::endl;
+	BMS_INFO("Server startup successful!\n");
 
 	// Set running to 'true' on successful startup
 	m_running = true;
@@ -112,7 +113,7 @@ void TcpListener::Run()
 					SOCKET client = WaitForConnection(listening);
 					FD_SET(client, &master);
 
-					std::cout << "Client connected" << std::endl;
+					BMS_TRACE("Client connected");
 
 					// Send welcome message to connected client
 					std::string welcomeMsg = "Connected to Business Management Server!";
@@ -139,7 +140,7 @@ void TcpListener::Run()
 							closesocket(s);
 							FD_CLR(s, &master);
 
-							std::cout << "Client disconnected" << std::endl;
+							BMS_TRACE("Client disconnected");
 						}
 					}
 					else if (buf[0] == 's')
@@ -149,7 +150,7 @@ void TcpListener::Run()
 						// Check if the server has been told to shutdown
 						if (input == "shutdown")
 						{
-							std::cout << "Shutdown request received" << std::endl;
+							BMS_WARN("Shutdown request received");
 							m_running = false;
 
 							break;
@@ -166,14 +167,14 @@ void TcpListener::Run()
 			}
 			else
 			{
-				std::cerr << "Invalid socket error. Exiting program..." << std::endl;
+				BMS_ERROR("Invalid socket error. Exiting program...");
 
 				break;
 			}
 		}
 	}
 
-	std::cout << "Shutting down server, please standby" << std::endl;
+	BMS_WARN("Shutting down server, please standby");
 	
 	// Remove listening socket to prevent further connections
 	FD_CLR(listening, &master);	
@@ -187,9 +188,12 @@ void TcpListener::Run()
 		closesocket(s);
 	}
 
-	std::cout << "Cleaning up server instance..." << std::endl;
+	BMS_TRACE("Cleaning up server instance...");
 
 	Cleanup();
+
+	BMS_INFO("Server shutdown complete");
+
 	system("pause");
 }
 
@@ -206,7 +210,7 @@ void TcpListener::Cleanup()
 */
 SOCKET TcpListener::CreateSocket()
 {
-	std::cout << "Creating listening socket..." << std::endl;
+	BMS_TRACE("Creating listening socket...");
 
 	SOCKET listening = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -219,7 +223,7 @@ SOCKET TcpListener::CreateSocket()
 		hint.sin_port = htons(m_port);
 		inet_pton(AF_INET, m_ipAddress.c_str(), &hint.sin_addr);
 
-		std::cout << "Binding ip address and port... ";
+		BMS_TRACE("Binding ip address and port... ");
 
 		int bindOk = bind(listening, (sockaddr*)&hint, sizeof(hint));
 
@@ -237,7 +241,7 @@ SOCKET TcpListener::CreateSocket()
 		}
 	}
 
-	std::cout << "Socket creation and binding successful" << std::endl;
+	BMS_INFO("Socket creation and binding successful");
 
 	return listening;
 }
@@ -247,7 +251,7 @@ SOCKET TcpListener::CreateSocket()
  */
 SOCKET TcpListener::WaitForConnection(SOCKET& listening)
 {
-	std::cout << "\nWaiting for client connection..." << std::endl;
+	BMS_TRACE("Waiting for client connection...");
 
 	SOCKET client = accept(listening, nullptr, nullptr);
 

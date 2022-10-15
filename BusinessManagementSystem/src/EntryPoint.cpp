@@ -3,6 +3,7 @@
 
 #include "./Networking/TcpListener.h"
 #include "./Networking/Handler.h"
+#include "./Log/Log.h"
 
 #pragma comment (lib, "ws2_32.lib")
 
@@ -20,7 +21,7 @@ void ListenerMessageReceived(TcpListener* listener, int client, std::string msg)
 	Handler msgHandler;
 	std::string response;
 
-	std::cout << "\nClient message: " << msg << std::endl;
+	BMS_TRACE("Client message: {0}", msg);
 
 	// Send response to the client application
 	response = msgHandler.DirectInput(msg);
@@ -32,7 +33,9 @@ void main()
 	std::string host = "127.0.0.1";			// Server ip address
 	int port = 54000;						// Server port
 
-	std::cout << "Welcome to Business Management System v1.0.0\n" << std::endl;
+	BMS::Log::Init();						// Initialize logger
+
+	BMS_TRACE("Welcome to Business Management System v1.0.0\n");
 
 	// Spin up a new server instance
 	TcpListener server(host, port, ListenerMessageReceived);

@@ -3,6 +3,7 @@
 #include <nlohmann/json.hpp>
 #include "Handler.h"
 #include "../HR/Employee.h"
+#include "../Log/Log.h"
 
 /**
  * @file Handler.cpp
@@ -46,45 +47,45 @@ std::string Handler::DirectInput(std::string msg)
 	int input = stoi(inputStr);
 	newJson = nlohmann::json::parse(getJson);
 
-	std::cout << "Function: " << input << "\n" << std::endl;
+	BMS_TRACE("Function: {0}\n", input);
 
 	switch (input)
 	{
 	case 100:
-		std::cout << "Called addEmployee() function" << std::endl;
-		std::cout << "Generated JSON object: " << newJson << std::endl;
+		BMS_TRACE("Called addEmployee() function");
+		BMS_TRACE("Generated JSON object: {0}", getJson);
 
 		success = BMS::Employee::AddEmployee(newJson);
 
 		// Check if employee was added successfully
 		if (success)
-			std::cout << "Employee added!" << std::endl;
+			BMS_INFO("Employee added!");
 		else
-			std::cout << "Failed to add employee" << std::endl;
+			BMS_ERROR("Failed to add employee");
 
 		response = "addEmployee function called";
 		break;
 	case 101:
-		std::cout << "Called removeEmployee() function" << std::endl;
-		std::cout << "Generated JSON object: " << newJson << std::endl;
+		BMS_TRACE("Called removeEmployee() function");
+		BMS_TRACE("Generated JSON object: {0}", getJson);
 		response = "removeEmployee function called";
 		break;
 	case 102:
-		std::cout << "Called updateEmployee() function" << std::endl;
-		std::cout << "Generated JSON object: " << newJson << std::endl;
+		BMS_TRACE("Called updateEmployee() function");
+		BMS_TRACE("Generated JSON object: {0}", getJson);
 
 		success = BMS::Employee::UpdateEmployee(newJson);
 
 		// Check if employee was updated successfully
 		if (success)
-			std::cout << "Employee added!" << std::endl;
+			BMS_INFO("Employee added!");
 		else
-			std::cout << "Failed to add employee" << std::endl;
+			BMS_ERROR("Failed to add employee");
 
 		response = "updateEmployee function called";
 		break;
 	default:
-		std::cout << "No function called" << std::endl;
+		BMS_TRACE("No function called");
 		response = "No function called";
 		break;
 	}

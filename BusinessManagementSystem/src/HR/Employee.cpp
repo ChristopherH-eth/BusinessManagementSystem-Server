@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Employee.h"
 #include "../Networking/Database.h"
+#include "../Log/Log.h"
 
 /**
  * @file Employee.cpp
@@ -37,9 +38,9 @@ namespace BMS
 
 		// Make sure we have a valid database connection
 		if (db.ConnectDB())
-			std::cout << "Successfully connected to the database!" << std::endl;
+			BMS_INFO("Successfully connected to the database!");
 		else
-			std::cout << "Couldn't connect to the database" << std::endl;
+			BMS_ERROR("Couldn't connect to the database");
 
 		// TODO: process employee details
 

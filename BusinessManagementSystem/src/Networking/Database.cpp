@@ -1,4 +1,5 @@
 #include "database.h"
+#include "../Log/Log.h"
 
 /**
  * @file Database.cpp
@@ -51,7 +52,7 @@ namespace BMS
 		{
 			delete con;
 
-			std::cout << "Database connection closed" << std::endl;
+			BMS_WARN("Database connection closed");
 
 			return true;
 		}
