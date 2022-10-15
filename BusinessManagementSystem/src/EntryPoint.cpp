@@ -1,5 +1,6 @@
 #include <iostream>
 #include <WS2tcpip.h>
+#include <filesystem>
 
 #include "./Networking/TcpListener.h"
 #include "./Networking/Handler.h"
@@ -30,12 +31,17 @@ void ListenerMessageReceived(TcpListener* listener, int client, std::string msg)
 
 void main()
 {
+	// Create directory for log files
+	const char* dirname = "./logs";
+	std::filesystem::create_directory(dirname);
+
 	std::string host = "127.0.0.1";			// Server ip address
 	int port = 54000;						// Server port
 
 	BMS::Log::Init();						// Initialize logger
 
 	BMS_TRACE("Welcome to Business Management System v1.0.0\n");
+	BMS_DAILY_TRACE("Welcome to Business Management System v1.0.0\n");
 
 	// Spin up a new server instance
 	TcpListener server(host, port, ListenerMessageReceived);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <mysql/jdbc.h>
+
 #include "../Core.h"
 
 /**
