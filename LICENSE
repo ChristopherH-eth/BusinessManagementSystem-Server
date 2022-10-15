@@ -186,7 +186,7 @@
       same "printed page" as the copyright notice for easier
       identification within third-party archives.
 
-   Copyright [yyyy] [name of copyright owner]
+   Copyright [2022] [Christopher Hardy]
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -199,3 +199,11 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+   
+   -- NOTE: Third party dependency used by this software --
+   This software depends on the following libraries:
+   
+   - spdlog : https://github.com/gabime/spdlog/blob/f44fa31f5110331af196d0ed7f00ae1c7b8ef3cc/LICENSE
+   - nlohmann json : https://github.com/nlohmann/json/blob/develop/LICENSE.MIT
+   
+   and users must comply with their license(s).
