@@ -1,7 +1,6 @@
 #pragma once
 
-#include <time.h>
-#include "../Core.h"
+#include "bmspch.h"
 
 /**
  * @file TimeClock.h

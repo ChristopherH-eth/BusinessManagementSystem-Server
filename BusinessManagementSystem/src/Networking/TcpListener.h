@@ -1,7 +1,6 @@
 #pragma once
 
-#include <string>
-#include <WS2tcpip.h>
+#include "bmspch.h"
 
 #pragma comment (lib, "ws2_32.lib")
 

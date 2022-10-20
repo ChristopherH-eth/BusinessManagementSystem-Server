@@ -1,9 +1,6 @@
 #pragma once
 
-#include <string>
-#include <nlohmann/json.hpp>
-
-#include "../Core.h"
+#include "bmspch.h"
 
 /**
  * @file Employee.h

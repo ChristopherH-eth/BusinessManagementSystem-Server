@@ -1,10 +1,8 @@
-#include <iostream>
-#include <WS2tcpip.h>
-#include <filesystem>
+#include "bmspch.h"
 
-#include "./Networking/TcpListener.h"
-#include "./Networking/Handler.h"
-#include "./Log/Log.h"
+#include "Networking/TcpListener.h"
+#include "Networking/Handler.h"
+#include "Log/Log.h"
 
 #pragma comment (lib, "ws2_32.lib")
 

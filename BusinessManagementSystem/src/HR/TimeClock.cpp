@@ -1,3 +1,5 @@
+#include "bmspch.h"
+
 #include "TimeClock.h"
 
 /**

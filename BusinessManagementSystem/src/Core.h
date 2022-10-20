@@ -1,5 +1,7 @@
 #pragma once
 
+#include "bmspch.h"
+
 /**
  * @file Core.h
  * @author 0xChristopher

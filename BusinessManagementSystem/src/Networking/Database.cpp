@@ -1,5 +1,7 @@
+#include "bmspch.h"
+
 #include "database.h"
-#include "../Log/Log.h"
+#include "Log/Log.h"
 
 /**
  * @file Database.cpp

@@ -1,8 +1,8 @@
-#include <iostream>
+#include "bmspch.h"
 
 #include "Employee.h"
-#include "../Networking/Database.h"
-#include "../Log/Log.h"
+#include "Networking/Database.h"
+#include "Log/Log.h"
 
 /**
  * @file Employee.cpp
