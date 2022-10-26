@@ -29,28 +29,39 @@ Handler::~Handler()
 */
 std::string Handler::DirectInput(std::string msg)
 {
-	bool success;
-	std::string response;
-	nlohmann::json newJson;
+	bool success;								// True upon successful database interaction
+	std::string response;						// Response to client side application
+	nlohmann::json newJson;						// JSON object derived from getJson substring
 
+	// Enum of function ids received from client side application
 	enum inputFunction
 	{
-		addEployee = 100,
-		removeEmployee = 101,
-		updateEmployee = 102
+		login = 100,
+		logout = 101,
+		addEmployee = 102,
+		removeEmployee = 103,
+		updateEmployee = 104
 	};
 
-	std::string inputStr = msg.substr(0, 3);
-	std::string getJson = msg.substr(4);
+	std::string inputStr = msg.substr(0, 3);	// Substring containing the function id
+	std::string getJson = msg.substr(4);		// Substring containing the JSON object
 
-	int input = stoi(inputStr);
+	int input = stoi(inputStr);					// Convert the function id to an int
 	newJson = nlohmann::json::parse(getJson);
 
 	BMS_TRACE("Function: {0}\n", input);
 
 	switch (input)
 	{
-	case 100:
+	case login:
+		BMS_INFO("Logged in");
+		break;
+
+	case logout:
+		BMS_INFO("Logged out");
+		break;
+
+	case addEmployee:
 		BMS_TRACE("Called addEmployee() function");
 		BMS_TRACE("Generated JSON object: {0}", getJson);
 
@@ -64,12 +75,23 @@ std::string Handler::DirectInput(std::string msg)
 
 		response = "addEmployee function called";
 		break;
-	case 101:
+
+	case removeEmployee:
 		BMS_TRACE("Called removeEmployee() function");
 		BMS_TRACE("Generated JSON object: {0}", getJson);
+
+		success = BMS::Employee::RemoveEmployee(newJson);
+
+		// Check if employee was removed successfully
+		if (success)
+			BMS_INFO("Employee removed!");
+		else
+			BMS_ERROR("Failed to add employee");
+
 		response = "removeEmployee function called";
 		break;
-	case 102:
+
+	case updateEmployee:
 		BMS_TRACE("Called updateEmployee() function");
 		BMS_TRACE("Generated JSON object: {0}", getJson);
 
@@ -83,6 +105,7 @@ std::string Handler::DirectInput(std::string msg)
 
 		response = "updateEmployee function called";
 		break;
+
 	default:
 		BMS_TRACE("No function called");
 		response = "No function called";

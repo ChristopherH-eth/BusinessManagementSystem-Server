@@ -5,7 +5,10 @@
 /**
  * @file Database.h
  * @author 0xChristopher
- * @brief 
+ * @brief The Database class allows the server to interact with the MySQL database. Upon establishing a
+ *		connection to the database, subsequent functions can be executed which end by sending queries to
+ *		the database to retrieve data or implement changes. This class however, only handles the opening
+ *		and closing of those connections.
  */
 
 namespace BMS

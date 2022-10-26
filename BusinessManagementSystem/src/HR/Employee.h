@@ -52,7 +52,7 @@ namespace BMS
 		 * @param id The employee's id number
 		 * @return Returns true upon successfully removing the employee
 		 */
-		bool static RemoveEmployee(int id);
+		bool static RemoveEmployee(nlohmann::json employee);
 
 		/**
 		 * @brief The UpdateEmployee() function adds an employee to the database

@@ -5,7 +5,8 @@
 /**
  * @file Log.h
  * @author 0xChristopher
- * @brief 
+ * @brief The Log class creates loggers for logging particular server side events to the console for
+ *		debugging at runtime, as well as to a file.
  */
 
 namespace BMS
