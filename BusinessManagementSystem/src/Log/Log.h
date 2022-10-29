@@ -53,8 +53,8 @@ namespace BMS
 #define BMS_FATAL(...)	::BMS::Log::GetLogger()->fatal(__VA_ARGS__)
 
 // File logger macros
-#define BMS_DAILY_TRACE(...)	::BMS::Log::GetFileLogger()->trace(__VA_ARGS__)
-#define BMS_DAILY_INFO(...)		::BMS::Log::GetFileLogger()->info(__VA_ARGS__)
-#define BMS_DAILY_WARN(...)		::BMS::Log::GetFileLogger()->warn(__VA_ARGS__)
-#define BMS_DAILY_ERROR(...)	::BMS::Log::GetFileLogger()->error(__VA_ARGS__)
-#define BMS_DAILY_FATAL(...)	::BMS::Log::GetFileLogger()->fatal(__VA_ARGS__)
+#define BMS_FILE_TRACE(...)	::BMS::Log::GetFileLogger()->trace(__VA_ARGS__)
+#define BMS_FILE_INFO(...)		::BMS::Log::GetFileLogger()->info(__VA_ARGS__)
+#define BMS_FILE_WARN(...)		::BMS::Log::GetFileLogger()->warn(__VA_ARGS__)
+#define BMS_FILE_ERROR(...)	::BMS::Log::GetFileLogger()->error(__VA_ARGS__)
+#define BMS_FILE_FATAL(...)	::BMS::Log::GetFileLogger()->fatal(__VA_ARGS__)

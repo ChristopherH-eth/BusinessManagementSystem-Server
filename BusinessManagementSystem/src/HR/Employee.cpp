@@ -4,6 +4,7 @@
 #include "Networking/Database.h"
 #include "Log/Log.h"
 #include "Util/DateUtil.h"
+#include "Queries/HR/EmployeeSQL.h"
 
 /**
  * @file Employee.cpp
@@ -17,8 +18,8 @@ namespace BMS
 	/**
 	* @brief Employee constructor and destructor
 	*/
-	Employee::Employee(std::string& firstName, std::string& lastName, std::string& birthDate, std::string& position,
-		float salary, int age, int id)
+	Employee::Employee(std::string& firstName, std::string& lastName, std::string& birthDate, 
+		std::string& position, float salary, int age, int id)
 		: m_firstName(firstName), m_lastName(lastName), m_birthDate(birthDate), m_position(position),
 		m_salary(salary), m_age(age), m_id(id)
 	{
@@ -33,36 +34,31 @@ namespace BMS
 	/**
 	* @brief The AddEmployee() function adds an employee to the database
 	*/
-	bool Employee::AddEmployee(nlohmann::json employee)
+	bool Employee::AddEmployee(nlohmann::json& employee)
 	{
 		Database db;
+		DateUtil dateUtil;
+		EmployeeSQL eSQL;
 		sql::Connection* con = db.ConnectDB();
 
 		// Make sure we have a valid database connection
-		if (db.ConnectDB())
+		if (con->isValid())
 			BMS_INFO("Successfully connected to the database!");
 		else
 			BMS_ERROR("Couldn't connect to the database");
 
-		DateUtil dateUtil = DateUtil();
-
 		// Get values from employee JSON object
 		std::string firstName = employee["firstName"].dump();
 		std::string lastName = employee["lastName"].dump();
-		std::string dob = employee["birthDate"].dump();
+		std::string birthDate = employee["birthDate"].dump();
 		std::string position = employee["position"].dump();
+		std::string salary = employee["salary"].dump();
 		std::string empId = employee["empId"].dump();
 
-		int age = dateUtil.GetAge(dob);
-		std::string strAge = std::to_string(age);
+		// Calculate age
+		int age = dateUtil.GetAge(birthDate);
 
-		BMS_INFO("{0}", firstName);
-		BMS_INFO("{0}", lastName);
-		BMS_INFO("{0}", dob);
-		BMS_INFO("{0}", strAge);
-		BMS_INFO("{0}", empId);
-
-		// TODO: process employee details
+		eSQL.DBAddEmployee(con, 0, firstName, lastName, birthDate, age, position, 0.0f);
 
 		return true;
 	}
@@ -70,13 +66,13 @@ namespace BMS
 	/**
 	* @brief The RemoveEmployee() function removes an employee from the database
 	*/
-	bool Employee::RemoveEmployee(nlohmann::json employee)
+	bool Employee::RemoveEmployee(nlohmann::json& employee)
 	{
 		Database db;
 		sql::Connection* con = db.ConnectDB();
 
 		// Make sure we have a valid database connection
-		if (db.ConnectDB())
+		if (con->isValid())
 			BMS_INFO("Successfully connected to the database!");
 		else
 			BMS_ERROR("Couldn't connect to the database");
@@ -89,13 +85,13 @@ namespace BMS
 	/**
 	* @brief The UpdateEmployee() function removes an employee from the database
 	*/
-	bool Employee::UpdateEmployee(nlohmann::json employee)
+	bool Employee::UpdateEmployee(nlohmann::json& employee)
 	{
 		Database db;
 		sql::Connection* con = db.ConnectDB();
 
 		// Make sure we have a valid database connection
-		if (db.ConnectDB())
+		if (con->isValid())
 			BMS_INFO("Successfully connected to the database!");
 		else
 			BMS_ERROR("Couldn't connect to the database");

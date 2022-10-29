@@ -39,7 +39,7 @@ void main()
 	BMS::Log::Init();						// Initialize logger
 
 	BMS_TRACE("Welcome to Business Management System v1.0.0\n");
-	BMS_DAILY_TRACE("Welcome to Business Management System v1.0.0\n");
+	BMS_FILE_TRACE("Welcome to Business Management System v1.0.0\n");
 
 	// Spin up a new server instance
 	TcpListener server(host, port, ListenerMessageReceived);

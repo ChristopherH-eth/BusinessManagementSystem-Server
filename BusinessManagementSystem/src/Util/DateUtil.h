@@ -30,6 +30,11 @@ namespace BMS
 		 */
 		int GetAge(std::string& strDate);
 
+		/**
+		 * @brief The GetDate() function calculates and returns the current date (using UTC time zone).
+		 */
+		std::tm GetCurrentDate();
+
 	};
 
 }

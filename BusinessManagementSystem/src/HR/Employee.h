@@ -35,8 +35,8 @@ namespace BMS
 		 * @param age The employee's age
 		 * @param id The employee's unique id
 		 */
-		Employee(std::string& firstName, std::string& lastName, std::string& birthDate, std::string& position,
-			float salary, int age, int id);
+		Employee(std::string& firstName, std::string& lastName, std::string& birthDate, 
+			std::string& position, float salary, int age, int id);
 
 		~Employee();
 
@@ -45,21 +45,21 @@ namespace BMS
 		 * @param employee The JSON object representing an employee
 		 * @return Returns true upon successfully adding the employee
 		 */
-		bool static AddEmployee(nlohmann::json employee);
+		bool static AddEmployee(nlohmann::json& employee);
 
 		/**
 		 * @brief The RemoveEmployee() function removes an employee from the database
 		 * @param id The employee's id number
 		 * @return Returns true upon successfully removing the employee
 		 */
-		bool static RemoveEmployee(nlohmann::json employee);
+		bool static RemoveEmployee(nlohmann::json& employee);
 
 		/**
 		 * @brief The UpdateEmployee() function adds an employee to the database
 		 * @param employee The JSON object representing an employee
 		 * @return Returns true upon successfully adding the employee
 		 */
-		bool static UpdateEmployee(nlohmann::json employee);
+		bool static UpdateEmployee(nlohmann::json& employee);
 
 	};
 

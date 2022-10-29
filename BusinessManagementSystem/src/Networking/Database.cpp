@@ -18,19 +18,60 @@ namespace BMS
 	Database::Database(std::string& db, std::string& user, std::string& pass)
 		: m_db(db), m_user(user), m_pass(pass)
 	{
-		this->driver = sql::mysql::get_mysql_driver_instance();
-		this->con = driver->connect(m_db, m_user, m_pass);
+		try
+		{
+			// Setup MySQL driver and connection to database
+			this->driver = sql::mysql::get_mysql_driver_instance();
+			this->con = driver->connect(m_db, m_user, m_pass);
+		}
+		catch (sql::SQLException& e) {
+			BMS_ERROR("# ERR: SQLException in {0} ({1}) on line {2}",
+				__FILE__, __FUNCTION__, __LINE__);
+			BMS_ERROR("# ERR: {0} (MySQL error code: {1}, SQLState: {2} )",
+				e.what(), e.getErrorCode(), e.getSQLState());
+			BMS_FILE_ERROR("# ERR: SQLException in {0} ({1}) on line {2}",
+				__FILE__, __FUNCTION__, __LINE__);
+			BMS_FILE_ERROR("# ERR: {0} (MySQL error code: {1}, SQLState: {2} )",
+				e.what(), e.getErrorCode(), e.getSQLState());
+		}
 	}
 
 	Database::Database()
 	{
-		this->driver = sql::mysql::get_mysql_driver_instance();
-		this->con = driver->connect(this->m_db, this->m_user, this->m_pass);
+		try
+		{
+			// Setup MySQL driver and connection to database
+			this->driver = sql::mysql::get_mysql_driver_instance();
+			this->con = driver->connect(this->m_db, this->m_user, this->m_pass);
+		}
+		catch (sql::SQLException& e) {
+			BMS_ERROR("# ERR: SQLException in {0} ({1}) on line {2}",
+				__FILE__, __FUNCTION__, __LINE__);
+			BMS_ERROR("# ERR: {0} (MySQL error code: {1}, SQLState: {2} )",
+				e.what(), e.getErrorCode(), e.getSQLState());
+			BMS_FILE_ERROR("# ERR: SQLException in {0} ({1}) on line {2}",
+				__FILE__, __FUNCTION__, __LINE__);
+			BMS_FILE_ERROR("# ERR: {0} (MySQL error code: {1}, SQLState: {2} )",
+				e.what(), e.getErrorCode(), e.getSQLState());
+		}
 	}
 
 	Database::~Database()
 	{
-		DisconnectDB(this->con);
+		try
+		{
+			DisconnectDB(this->con);
+		}
+		catch (sql::SQLException& e) {
+			BMS_ERROR("# ERR: SQLException in {0} ({1}) on line {2}",
+				__FILE__, __FUNCTION__, __LINE__);
+			BMS_ERROR("# ERR: {0} (MySQL error code: {1}, SQLState: {2} )",
+				e.what(), e.getErrorCode(), e.getSQLState());
+			BMS_FILE_ERROR("# ERR: SQLException in {0} ({1}) on line {2}",
+				__FILE__, __FUNCTION__, __LINE__);
+			BMS_FILE_ERROR("# ERR: {0} (MySQL error code: {1}, SQLState: {2} )",
+				e.what(), e.getErrorCode(), e.getSQLState());
+		}
 	}
 
 	/**
@@ -39,10 +80,29 @@ namespace BMS
 	 */
 	sql::Connection* Database::ConnectDB()
 	{
-		if (!this->con->isValid())
-			this->con = driver->connect(this->m_db, this->m_user, this->m_pass);
+		try
+		{
+			// Check our connection
+			if (!this->con->isValid())
+				// Try to connect to database
+				this->con = driver->connect(this->m_db, this->m_user, this->m_pass);
 
-		return this->con;
+			// Return valid connection or log error
+			if (this->con->isValid())
+				return this->con;
+			else
+				BMS_ERROR("Could not establish connection to database");
+		}
+		catch (sql::SQLException& e) {
+			BMS_ERROR("# ERR: SQLException in {0} ({1}) on line {2}",
+				__FILE__, __FUNCTION__, __LINE__);
+			BMS_ERROR("# ERR: {0} (MySQL error code: {1}, SQLState: {2} )",
+				e.what(), e.getErrorCode(), e.getSQLState());
+			BMS_FILE_ERROR("# ERR: SQLException in {0} ({1}) on line {2}",
+				__FILE__, __FUNCTION__, __LINE__);
+			BMS_FILE_ERROR("# ERR: {0} (MySQL error code: {1}, SQLState: {2} )",
+				e.what(), e.getErrorCode(), e.getSQLState());
+		}
 	}
 
 	/**
@@ -50,16 +110,30 @@ namespace BMS
 	 */
 	bool Database::DisconnectDB(sql::Connection*& con)
 	{
-		if (this->con->isValid())
+		try
 		{
-			delete con;
+			// Clean up connection if we still have one
+			if (this->con->isValid())
+			{
+				delete con;
 
-			BMS_WARN("Database connection closed");
+				BMS_WARN("Database connection closed");
 
-			return true;
+				return true;
+			}
+			else
+				return false;
 		}
-		else
-			return false;
+		catch (sql::SQLException& e) {
+			BMS_ERROR("# ERR: SQLException in {0} ({1}) on line {2}",
+				__FILE__, __FUNCTION__, __LINE__);
+			BMS_ERROR("# ERR: {0} (MySQL error code: {1}, SQLState: {2} )",
+				e.what(), e.getErrorCode(), e.getSQLState());
+			BMS_FILE_ERROR("# ERR: SQLException in {0} ({1}) on line {2}",
+				__FILE__, __FUNCTION__, __LINE__);
+			BMS_FILE_ERROR("# ERR: {0} (MySQL error code: {1}, SQLState: {2} )",
+				e.what(), e.getErrorCode(), e.getSQLState());
+		}
 	}
 
 }
