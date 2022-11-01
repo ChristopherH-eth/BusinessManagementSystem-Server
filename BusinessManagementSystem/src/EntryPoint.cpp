@@ -17,7 +17,7 @@
  */
 void ListenerMessageReceived(TcpListener* listener, int client, std::string msg)
 {
-	Handler msgHandler;
+	BMS::Handler msgHandler;
 	std::string response;
 
 	BMS_TRACE("Client message: {0}", msg);

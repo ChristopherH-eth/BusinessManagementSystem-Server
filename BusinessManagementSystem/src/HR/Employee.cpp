@@ -100,4 +100,27 @@ namespace BMS
 
 		return true;
 	}
+
+	/**
+	* @brief The SearchEmployees() function removes an employee from the database
+	*/
+	bool Employee::SearchEmployees(nlohmann::json& employee)
+	{
+		Database db;
+		EmployeeSQL eSQL;
+		sql::Connection* con = db.ConnectDB();
+
+		// Make sure we have a valid database connection
+		if (con->isValid())
+			BMS_INFO("Successfully connected to the database!");
+		else
+			BMS_ERROR("Couldn't connect to the database");
+
+		// Get values from employee JSON object
+		std::string firstName = employee["firstName"].dump();
+
+		employee = eSQL.DBEmpSearch(con, firstName);
+
+		return true;
+	}
 }

@@ -17,9 +17,11 @@ namespace BMS
 
 	public:
 		/**
-		 *
+		 * @brief The DBEMPSearch() function search the database for employees based on their first name.
+		 * @param con The current database connection
+		 * @param firstName The first name of the employee being searched for
 		 */
-		void DBEmpSearch(sql::Connection*& con, std::string firstName);
+		nlohmann::json DBEmpSearch(sql::Connection*& con, std::string& firstName);
 
 		/**
 		 * @brief The DBAddEmployee() function adds an employee to the MySQL database employees table.

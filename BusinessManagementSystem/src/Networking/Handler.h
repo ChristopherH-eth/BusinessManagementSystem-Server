@@ -11,22 +11,27 @@
  *		table, so that payroll and compensation lookups return accurate data.
  */
 
-class Handler
+namespace BMS
 {
 
-public:
-	/**
-	 * @brief Handler constructor and destructor
-	 */
-	Handler();
+	class Handler
+	{
 
-	~Handler();
+	public:
+		/**
+		 * @brief Handler constructor and destructor
+		 */
+		Handler();
 
-	/**
-	 * @brief The DirectInput() function directs client input to the appropriate part of the
-	 * application for interaction based on the function id.
-	 * @param msg The client input to be directed
-	 */
-	std::string DirectInput(std::string msg);
+		~Handler();
 
-};
+		/**
+		 * @brief The DirectInput() function directs client input to the appropriate part of the
+		 * application for interaction based on the function id.
+		 * @param msg The client input to be directed
+		 */
+		std::string DirectInput(std::string& msg);
+
+	};
+
+}

@@ -61,6 +61,11 @@ namespace BMS
 		 */
 		bool static UpdateEmployee(nlohmann::json& employee);
 
+		/**
+		 * @brief The SearchEmployees() function removes an employee from the database
+		 */
+		bool static SearchEmployees(nlohmann::json& employee);
+
 	};
 
 }

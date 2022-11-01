@@ -12,10 +12,14 @@
 namespace BMS
 {
 
-	void EmployeeSQL::DBEmpSearch(sql::Connection*& con, std::string firstName)
+	/**
+	 * @brief The DBEMPSearch() function search the database for employees based on their first name.
+	 */
+	nlohmann::json EmployeeSQL::DBEmpSearch(sql::Connection*& con, std::string& firstName)
 	{
 		try
 		{
+			nlohmann::json result;				// JSON object for search results
 			sql::PreparedStatement* pstmt;		// MySQL prepared statement
 			sql::ResultSet* res;				// Result set from query
 			con->setSchema("bms");				// Set schema we want to interact with
@@ -30,13 +34,31 @@ namespace BMS
 			res = pstmt->executeQuery();
 			res->beforeFirst();
 
-			while (res->next())
+			// Check for results
+			if (res->next())
 			{
-				// TODO: Set employees to JSON objects to send back to client
+				res->previous();
+
+				while (res->next())
+				{
+					std::cout << res->getString("firstName") << std::endl;
+
+					// TODO: Set employees to JSON objects to send back to client
+					result =
+					{
+						{"firstName", res->getString("firstName")}
+					};
+				}
+			}
+			else
+			{
+				BMS_WARN("No results found for employee search");
 			}
 
 			delete res;
 			delete pstmt;
+
+			return result;
 		}
 		catch (sql::SQLException& e) {
 			BMS_ERROR("# ERR: SQLException in {0} ({1}) on line {2}",
