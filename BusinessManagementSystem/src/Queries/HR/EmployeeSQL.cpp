@@ -13,69 +13,9 @@ namespace BMS
 {
 
 	/**
-	 * @brief The DBEMPSearch() function search the database for employees based on their first name.
-	 */
-	nlohmann::json EmployeeSQL::DBEmpSearch(sql::Connection*& con, std::string& firstName)
-	{
-		try
-		{
-			nlohmann::json result;				// JSON object for search results
-			sql::PreparedStatement* pstmt;		// MySQL prepared statement
-			sql::ResultSet* res;				// Result set from query
-			con->setSchema("bms");				// Set schema we want to interact with
-
-			// Define our prepared statement
-			pstmt = con->prepareStatement("SELECT * FROM employees WHERE firstName = ?");
-
-			// Set values for prepared statement
-			pstmt->setString(1, firstName);
-
-			// Execute our prepared statement
-			res = pstmt->executeQuery();
-			res->beforeFirst();
-
-			// Check for results
-			if (res->next())
-			{
-				res->previous();
-
-				while (res->next())
-				{
-					std::cout << res->getString("firstName") << std::endl;
-
-					// TODO: Set employees to JSON objects to send back to client
-					result =
-					{
-						{"firstName", res->getString("firstName")}
-					};
-				}
-			}
-			else
-			{
-				BMS_WARN("No results found for employee search");
-			}
-
-			delete res;
-			delete pstmt;
-
-			return result;
-		}
-		catch (sql::SQLException& e) {
-			BMS_ERROR("# ERR: SQLException in {0} ({1}) on line {2}",
-				__FILE__, __FUNCTION__, __LINE__);
-			BMS_ERROR("# ERR: {0} (MySQL error code: {1}, SQLState: {2} )",
-				e.what(), e.getErrorCode(), e.getSQLState());
-			BMS_FILE_ERROR("# ERR: SQLException in {0} ({1}) on line {2}",
-				__FILE__, __FUNCTION__, __LINE__);
-			BMS_FILE_ERROR("# ERR: {0} (MySQL error code: {1}, SQLState: {2} )",
-				e.what(), e.getErrorCode(), e.getSQLState());
-		}
-	}
-
-	/**
 	 * @brief The DBAddEmployee() function adds an employee to the MySQL database employees table.
 	 */
-	void EmployeeSQL::DBAddEmployee(sql::Connection*& con, int empId, std::string& firstName, 
+	bool EmployeeSQL::DBAddEmployee(sql::Connection*& con, int empId, std::string& firstName, 
 		std::string& lastName, std::string& birthDate, int age, std::string& position, float salary)
 	{
 		try 
@@ -100,11 +40,72 @@ namespace BMS
 			pstmt->executeQuery();
 
 			delete pstmt;
+
+			return true;
 		}
 		catch (sql::SQLException& e) {
 			BMS_ERROR("# ERR: SQLException in {0} ({1}) on line {2}", 
 				__FILE__, __FUNCTION__, __LINE__);
 			BMS_ERROR("# ERR: {0} (MySQL error code: {1}, SQLState: {2} )", 
+				e.what(), e.getErrorCode(), e.getSQLState());
+			BMS_FILE_ERROR("# ERR: SQLException in {0} ({1}) on line {2}",
+				__FILE__, __FUNCTION__, __LINE__);
+			BMS_FILE_ERROR("# ERR: {0} (MySQL error code: {1}, SQLState: {2} )",
+				e.what(), e.getErrorCode(), e.getSQLState());
+		}
+	}
+
+	/**
+	 * @brief The DBEMPSearch() function search the database for employees based on their first name.
+	 */
+	bool EmployeeSQL::DBEmpSearch(sql::Connection*& con, nlohmann::json& employee, std::string& firstName)
+	{
+		try
+		{
+			nlohmann::json result;				// JSON object for search results
+			sql::PreparedStatement* pstmt;		// MySQL prepared statement
+			sql::ResultSet* res;				// Result set from query
+			con->setSchema("bms");				// Set schema we want to interact with
+
+			// Define our prepared statement
+			pstmt = con->prepareStatement("SELECT * FROM employees WHERE firstName = ?");
+
+			// Set values for prepared statement
+			pstmt->setString(1, firstName);
+
+			// Execute our prepared statement
+			res = pstmt->executeQuery();
+			res->beforeFirst();
+
+			// Check for results
+			if (res->next())
+			{
+				res->previous();
+
+				// Prepare result set to be sent back to client
+				while (res->next())
+				{
+					std::string resultStr = "{ \"firstName\": " + res->getString("firstName") + " }";
+
+					employee = nlohmann::json::parse(resultStr);
+				}
+			}
+			else
+			{
+				BMS_WARN("No results found for employee search");
+
+				return false;
+			}
+
+			delete res;
+			delete pstmt;
+
+			return true;
+		}
+		catch (sql::SQLException& e) {
+			BMS_ERROR("# ERR: SQLException in {0} ({1}) on line {2}",
+				__FILE__, __FUNCTION__, __LINE__);
+			BMS_ERROR("# ERR: {0} (MySQL error code: {1}, SQLState: {2} )",
 				e.what(), e.getErrorCode(), e.getSQLState());
 			BMS_FILE_ERROR("# ERR: SQLException in {0} ({1}) on line {2}",
 				__FILE__, __FUNCTION__, __LINE__);

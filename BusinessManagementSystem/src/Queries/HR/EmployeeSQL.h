@@ -21,7 +21,7 @@ namespace BMS
 		 * @param con The current database connection
 		 * @param firstName The first name of the employee being searched for
 		 */
-		nlohmann::json DBEmpSearch(sql::Connection*& con, std::string& firstName);
+		bool DBEmpSearch(sql::Connection*& con, nlohmann::json& employee, std::string& firstName);
 
 		/**
 		 * @brief The DBAddEmployee() function adds an employee to the MySQL database employees table.
@@ -34,7 +34,7 @@ namespace BMS
 		 * @param position The employee's position
 		 * @param salary The employee's yearly salary
 		 */
-		void DBAddEmployee(sql::Connection*& con, int empId, std::string& firstName, std::string& lastName, 
+		bool DBAddEmployee(sql::Connection*& con, int empId, std::string& firstName, std::string& lastName, 
 			std::string& birthDate, int age, std::string& position, float salary);
 
 	};

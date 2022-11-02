@@ -40,27 +40,49 @@ namespace BMS
 		DateUtil dateUtil;
 		EmployeeSQL eSQL;
 		sql::Connection* con = db.ConnectDB();
+		bool success = false;
 
 		// Make sure we have a valid database connection
 		if (con->isValid())
 			BMS_INFO("Successfully connected to the database!");
 		else
+		{
 			BMS_ERROR("Couldn't connect to the database");
+
+			return;
+		}
 
 		// Get values from employee JSON object
 		std::string firstName = employee["firstName"].dump();
 		std::string lastName = employee["lastName"].dump();
 		std::string birthDate = employee["birthDate"].dump();
 		std::string position = employee["position"].dump();
-		std::string salary = employee["salary"].dump();
-		std::string empId = employee["empId"].dump();
+		std::string salaryStr = employee["salary"].dump();
+		std::string empIdStr = employee["empId"].dump();
+
+		// Convert numeric values
+		int empId = stoi(empIdStr);
+		float salary = stof(salaryStr);
 
 		// Calculate age
 		int age = dateUtil.GetAge(birthDate);
 
-		eSQL.DBAddEmployee(con, 0, firstName, lastName, birthDate, age, position, 0.0f);
+		// Attempt to add employee to database
+		success = eSQL.DBAddEmployee(con, empId, firstName, lastName, birthDate, age, position, salary);
 
-		return true;
+		// Check if we successfully added an employee
+		if (success)
+		{
+			BMS_INFO("Successfully added employee: {0} {1}", firstName, lastName);
+
+			return true;
+		}
+		else
+		{
+			BMS_ERROR("Failed to add employee: {0} {1}", firstName, lastName);
+
+			return false;
+		}
 	}
 
 	/**
@@ -75,7 +97,11 @@ namespace BMS
 		if (con->isValid())
 			BMS_INFO("Successfully connected to the database!");
 		else
+		{
 			BMS_ERROR("Couldn't connect to the database");
+
+			return false;
+		}
 
 		// TODO: process employee removal
 
@@ -94,7 +120,11 @@ namespace BMS
 		if (con->isValid())
 			BMS_INFO("Successfully connected to the database!");
 		else
+		{
 			BMS_ERROR("Couldn't connect to the database");
+
+			return false;
+		}
 
 		// TODO: process employee update
 
@@ -109,18 +139,37 @@ namespace BMS
 		Database db;
 		EmployeeSQL eSQL;
 		sql::Connection* con = db.ConnectDB();
+		bool success = false;
 
 		// Make sure we have a valid database connection
 		if (con->isValid())
 			BMS_INFO("Successfully connected to the database!");
 		else
+		{
 			BMS_ERROR("Couldn't connect to the database");
+
+			return false;
+		}
 
 		// Get values from employee JSON object
 		std::string firstName = employee["firstName"].dump();
 
-		employee = eSQL.DBEmpSearch(con, firstName);
+		// Attempt to find employee in the database
+		success = eSQL.DBEmpSearch(con, employee, firstName);
 
-		return true;
+		// Check if we successfully found an employee
+		if (success)
+		{
+			BMS_INFO("Successfully found employee: {0}", firstName);
+
+			return true;
+		}
+		else
+		{
+			BMS_ERROR("Failed to find employee: {0}", firstName);
+
+			return false;
+		}
 	}
+
 }

@@ -32,7 +32,7 @@ namespace BMS
 	*/
 	std::string Handler::DirectInput(std::string& msg)
 	{
-		bool success;								// True upon successful database interaction
+		bool success = false;						// True upon successful database interaction
 		std::string response;						// Response to client side application
 		nlohmann::json newJson;						// JSON object derived from getJson substring
 
@@ -51,18 +51,24 @@ namespace BMS
 		std::string getJson = msg.substr(4);		// Substring containing the JSON object
 
 		int input = stoi(inputStr);					// Convert the function id to an int
-		newJson = nlohmann::json::parse(getJson);
+		newJson = nlohmann::json::parse(getJson);	// Parse JSON object from JSON string
 
-		BMS_TRACE("Function: {0}\n", input);
+		BMS_TRACE("Function Id: {0}", input);
 
 		switch (input)
 		{
 		case login:
 			BMS_INFO("Logged in");
+
+			// TODO: Log users in
+
 			break;
 
 		case logout:
 			BMS_INFO("Logged out");
+
+			// TODO: Log users out
+
 			break;
 
 		case addEmployee:
@@ -70,14 +76,12 @@ namespace BMS
 			BMS_TRACE("Generated JSON object: {0}", getJson);
 
 			success = Employee::AddEmployee(newJson);
-
+			
 			// Check if employee was added successfully
 			if (success)
-				BMS_INFO("Employee added!");
+				response = "addEmployee function successfully called";
 			else
-				BMS_ERROR("Failed to add employee");
-
-			response = "addEmployee function called";
+				response = "Failed to add employee";
 			break;
 
 		case removeEmployee:
@@ -92,7 +96,7 @@ namespace BMS
 			else
 				BMS_ERROR("Failed to add employee");
 
-			response = "removeEmployee function called";
+			response = "removeEmployee function successfully called";
 			break;
 
 		case updateEmployee:
@@ -103,20 +107,23 @@ namespace BMS
 
 			// Check if employee was updated successfully
 			if (success)
-				BMS_INFO("Employee added!");
+				BMS_INFO("Employee updated!");
 			else
-				BMS_ERROR("Failed to add employee");
+				BMS_ERROR("Failed to update employee");
 
-			response = "updateEmployee function called";
+			response = "updateEmployee function successfully called";
 			break;
 
 		case searchEmployees:
 			BMS_TRACE("Called searchEmployees() function");
 
-			// Check if any results were found
 			success = Employee::SearchEmployees(newJson);
 
-			response = newJson.dump();
+			// Check if employee was found successfully
+			if (success)
+				response = newJson.dump();
+			else
+				response = "Employee not found";
 			break;
 
 		default:
