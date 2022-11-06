@@ -62,6 +62,7 @@ namespace BMS
 
 			// TODO: Log users in
 
+			response = "Login successful";
 			break;
 
 		case logout:
@@ -69,6 +70,7 @@ namespace BMS
 
 			// TODO: Log users out
 
+			response = "Logout successful";
 			break;
 
 		case addEmployee:

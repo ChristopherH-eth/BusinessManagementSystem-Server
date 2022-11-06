@@ -3,6 +3,7 @@
 #include "Networking/TcpListener.h"
 #include "Networking/Handler.h"
 #include "Log/Log.h"
+#include "Networking/Database.h"
 
 #pragma comment (lib, "ws2_32.lib")
 
@@ -40,6 +41,28 @@ void main()
 
 	BMS_TRACE("Welcome to Business Management System v1.0.0\n");
 	BMS_FILE_TRACE("Welcome to Business Management System v1.0.0\n");
+
+	// Make sure we can connect to the database
+	try
+	{
+		BMS::Database db;
+		sql::Connection* con = db.ConnectDB();
+
+		if (!con->isValid())
+		{
+			BMS_ERROR("Failed to connect to database, terminating session");
+
+			return;
+		}
+
+		db.DisconnectDB(con);
+	}
+	catch (std::string& error)
+	{
+		BMS_ERROR("Failed to connect to database, terminating session with error: {0}", error);
+
+		return;
+	}
 
 	// Spin up a new server instance
 	TcpListener server(host, port, ListenerMessageReceived);

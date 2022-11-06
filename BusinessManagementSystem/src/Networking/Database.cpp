@@ -1,6 +1,6 @@
 #include "bmspch.h"
 
-#include "database.h"
+#include "Database.h"
 #include "Log/Log.h"
 
 /**
@@ -24,15 +24,8 @@ namespace BMS
 			this->driver = sql::mysql::get_mysql_driver_instance();
 			this->con = driver->connect(m_db, m_user, m_pass);
 		}
-		catch (sql::SQLException& e) {
-			BMS_ERROR("# ERR: SQLException in {0} ({1}) on line {2}",
-				__FILE__, __FUNCTION__, __LINE__);
-			BMS_ERROR("# ERR: {0} (MySQL error code: {1}, SQLState: {2} )",
-				e.what(), e.getErrorCode(), e.getSQLState());
-			BMS_FILE_ERROR("# ERR: SQLException in {0} ({1}) on line {2}",
-				__FILE__, __FUNCTION__, __LINE__);
-			BMS_FILE_ERROR("# ERR: {0} (MySQL error code: {1}, SQLState: {2} )",
-				e.what(), e.getErrorCode(), e.getSQLState());
+		catch (std::string& error) {
+			BMS_ERROR(error);
 		}
 	}
 
@@ -44,34 +37,14 @@ namespace BMS
 			this->driver = sql::mysql::get_mysql_driver_instance();
 			this->con = driver->connect(this->m_db, this->m_user, this->m_pass);
 		}
-		catch (sql::SQLException& e) {
-			BMS_ERROR("# ERR: SQLException in {0} ({1}) on line {2}",
-				__FILE__, __FUNCTION__, __LINE__);
-			BMS_ERROR("# ERR: {0} (MySQL error code: {1}, SQLState: {2} )",
-				e.what(), e.getErrorCode(), e.getSQLState());
-			BMS_FILE_ERROR("# ERR: SQLException in {0} ({1}) on line {2}",
-				__FILE__, __FUNCTION__, __LINE__);
-			BMS_FILE_ERROR("# ERR: {0} (MySQL error code: {1}, SQLState: {2} )",
-				e.what(), e.getErrorCode(), e.getSQLState());
+		catch (std::string& error) {
+			BMS_ERROR(error);
 		}
 	}
 
 	Database::~Database()
 	{
-		try
-		{
-			DisconnectDB(this->con);
-		}
-		catch (sql::SQLException& e) {
-			BMS_ERROR("# ERR: SQLException in {0} ({1}) on line {2}",
-				__FILE__, __FUNCTION__, __LINE__);
-			BMS_ERROR("# ERR: {0} (MySQL error code: {1}, SQLState: {2} )",
-				e.what(), e.getErrorCode(), e.getSQLState());
-			BMS_FILE_ERROR("# ERR: SQLException in {0} ({1}) on line {2}",
-				__FILE__, __FUNCTION__, __LINE__);
-			BMS_FILE_ERROR("# ERR: {0} (MySQL error code: {1}, SQLState: {2} )",
-				e.what(), e.getErrorCode(), e.getSQLState());
-		}
+		
 	}
 
 	/**
@@ -93,15 +66,8 @@ namespace BMS
 			else
 				BMS_ERROR("Could not establish connection to database");
 		}
-		catch (sql::SQLException& e) {
-			BMS_ERROR("# ERR: SQLException in {0} ({1}) on line {2}",
-				__FILE__, __FUNCTION__, __LINE__);
-			BMS_ERROR("# ERR: {0} (MySQL error code: {1}, SQLState: {2} )",
-				e.what(), e.getErrorCode(), e.getSQLState());
-			BMS_FILE_ERROR("# ERR: SQLException in {0} ({1}) on line {2}",
-				__FILE__, __FUNCTION__, __LINE__);
-			BMS_FILE_ERROR("# ERR: {0} (MySQL error code: {1}, SQLState: {2} )",
-				e.what(), e.getErrorCode(), e.getSQLState());
+		catch (std::string& error) {
+			BMS_ERROR(error);
 		}
 	}
 
@@ -124,15 +90,8 @@ namespace BMS
 			else
 				return false;
 		}
-		catch (sql::SQLException& e) {
-			BMS_ERROR("# ERR: SQLException in {0} ({1}) on line {2}",
-				__FILE__, __FUNCTION__, __LINE__);
-			BMS_ERROR("# ERR: {0} (MySQL error code: {1}, SQLState: {2} )",
-				e.what(), e.getErrorCode(), e.getSQLState());
-			BMS_FILE_ERROR("# ERR: SQLException in {0} ({1}) on line {2}",
-				__FILE__, __FUNCTION__, __LINE__);
-			BMS_FILE_ERROR("# ERR: {0} (MySQL error code: {1}, SQLState: {2} )",
-				e.what(), e.getErrorCode(), e.getSQLState());
+		catch (std::string& error) {
+			BMS_ERROR(error);
 		}
 	}
 

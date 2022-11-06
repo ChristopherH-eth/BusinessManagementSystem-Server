@@ -49,7 +49,7 @@ namespace BMS
 		{
 			BMS_ERROR("Couldn't connect to the database");
 
-			return;
+			return false;
 		}
 
 		// Get values from employee JSON object
@@ -74,12 +74,14 @@ namespace BMS
 		if (success)
 		{
 			BMS_INFO("Successfully added employee: {0} {1}", firstName, lastName);
+			db.DisconnectDB(con);
 
 			return true;
 		}
 		else
 		{
 			BMS_ERROR("Failed to add employee: {0} {1}", firstName, lastName);
+			db.DisconnectDB(con);
 
 			return false;
 		}
@@ -95,10 +97,14 @@ namespace BMS
 
 		// Make sure we have a valid database connection
 		if (con->isValid())
+		{
 			BMS_INFO("Successfully connected to the database!");
+			db.DisconnectDB(con);
+		}
 		else
 		{
 			BMS_ERROR("Couldn't connect to the database");
+			db.DisconnectDB(con);
 
 			return false;
 		}
@@ -118,10 +124,14 @@ namespace BMS
 
 		// Make sure we have a valid database connection
 		if (con->isValid())
+		{
 			BMS_INFO("Successfully connected to the database!");
+			db.DisconnectDB(con);
+		}
 		else
 		{
 			BMS_ERROR("Couldn't connect to the database");
+			db.DisconnectDB(con);
 
 			return false;
 		}
@@ -143,10 +153,14 @@ namespace BMS
 
 		// Make sure we have a valid database connection
 		if (con->isValid())
+		{
 			BMS_INFO("Successfully connected to the database!");
+			db.DisconnectDB(con);
+		}
 		else
 		{
 			BMS_ERROR("Couldn't connect to the database");
+			db.DisconnectDB(con);
 
 			return false;
 		}
@@ -161,12 +175,14 @@ namespace BMS
 		if (success)
 		{
 			BMS_INFO("Successfully found employee: {0}", firstName);
+			db.DisconnectDB(con);
 
 			return true;
 		}
 		else
 		{
 			BMS_ERROR("Failed to find employee: {0}", firstName);
+			db.DisconnectDB(con);
 
 			return false;
 		}
