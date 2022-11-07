@@ -34,13 +34,18 @@ void main()
 	const char* dirname = "./logs";
 	std::filesystem::create_directory(dirname);
 
-	std::string host = "127.0.0.1";			// Server ip address
-	int port = 54000;						// Server port
+	std::string host = "127.0.0.1";				// Server ip address
+	int port = 54000;							// Server port
 
-	BMS::Log::Init();						// Initialize logger
-
-	BMS_TRACE("Welcome to Business Management System v1.0.0\n");
-	BMS_FILE_TRACE("Welcome to Business Management System v1.0.0\n");
+	// Make sure we can initialize the logger
+	try
+	{
+		BMS::Log::Init();
+	}
+	catch (std::string& error)
+	{
+		BMS_ERROR("Failed to initialize logger, terminating session with error: {0}", error);
+	}
 
 	// Make sure we can connect to the database
 	try
@@ -63,6 +68,9 @@ void main()
 
 		return;
 	}
+
+	BMS_TRACE("Welcome to Business Management System v1.0.0\n");
+	BMS_FILE_TRACE("Welcome to Business Management System v1.0.0\n");
 
 	// Spin up a new server instance
 	TcpListener server(host, port, ListenerMessageReceived);

@@ -12,6 +12,52 @@
 namespace BMS
 {
 
+	bool EmployeeSQL::CheckEmployeeTable(sql::Connection*& con)
+	{
+		try
+		{
+			sql::Statement* stmt;				// MySQL statement to be executed
+			//sql::ResultSet* res;				// MySQL result set
+			con->setSchema("bms");				// Set schema we want to interact with
+
+			// Define our query statement
+			stmt = con->createStatement();
+			//res = stmt->executeQuery("SELECT * FROM employees LIMIT 1");
+
+			/*if (res->next())
+				return true;
+			else
+			{*/
+				stmt->executeQuery("CREATE TABLE `employees` (\
+				`empId` INT NOT NULL,\
+				`firstName` VARCHAR(45) NOT NULL,\
+				`lastName` VARCHAR(45) NOT NULL,\
+				`birthDate` VARCHAR(45) NOT NULL,\
+				`age` INT NOT NULL,\
+				`position` VARCHAR(45) NOT NULL,\
+				`salary` FLOAT NOT NULL,\
+				`username` VARCHAR(45) DEFAULT NULL,\
+				`password` VARCHAR(45) DEFAULT NULL,\
+				PRIMARY KEY(`empId`))");
+
+				return true;
+			//}
+
+			// Couldn't find/create table
+			return false;
+		}
+		catch (sql::SQLException& e) {
+			BMS_ERROR("# ERR: SQLException in {0} ({1}) on line {2}",
+				__FILE__, __FUNCTION__, __LINE__);
+			BMS_ERROR("# ERR: {0} (MySQL error code: {1}, SQLState: {2} )",
+				e.what(), e.getErrorCode(), e.getSQLState());
+			BMS_FILE_ERROR("# ERR: SQLException in {0} ({1}) on line {2}",
+				__FILE__, __FUNCTION__, __LINE__);
+			BMS_FILE_ERROR("# ERR: {0} (MySQL error code: {1}, SQLState: {2} )",
+				e.what(), e.getErrorCode(), e.getSQLState());
+		}
+	}
+
 	/**
 	 * @brief The DBAddEmployee() function adds an employee to the MySQL database employees table.
 	 */
@@ -113,16 +159,5 @@ namespace BMS
 				e.what(), e.getErrorCode(), e.getSQLState());
 		}
 	}
-
-	// TODO: Check table exists
-	//CREATE TABLE `bms`.`employees` (
-	//	`empId` INT NOT NULL,
-	//	`firstName` VARCHAR(45) NOT NULL,
-	//	`lastName` VARCHAR(45) NOT NULL,
-	//	`birthDate` VARCHAR(45) NOT NULL,
-	//	`age` INT NOT NULL,
-	//	`position` VARCHAR(45) NOT NULL,
-	//	`salary` FLOAT NOT NULL,
-	//	PRIMARY KEY(`empId`));
 
 }

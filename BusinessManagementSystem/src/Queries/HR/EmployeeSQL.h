@@ -16,6 +16,8 @@ namespace BMS
 	{
 
 	public:
+		bool CheckEmployeeTable(sql::Connection*& con);
+
 		/**
 		 * @brief The DBEMPSearch() function search the database for employees based on their first name.
 		 * @param con The current database connection

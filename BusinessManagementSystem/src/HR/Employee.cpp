@@ -52,6 +52,14 @@ namespace BMS
 			return false;
 		}
 
+		// Make sure the employee table exists
+		if (!eSQL.CheckEmployeeTable(con))
+		{
+			BMS_ERROR("Could not find or create 'employee' table in database.");
+
+			return false;
+		}
+
 		// Get values from employee JSON object
 		std::string firstName = employee["firstName"].dump();
 		std::string lastName = employee["lastName"].dump();
@@ -61,6 +69,7 @@ namespace BMS
 		std::string empIdStr = employee["empId"].dump();
 
 		// Convert numeric values
+		// TODO: Remove quotes from strings
 		int empId = stoi(empIdStr);
 		float salary = stof(salaryStr);
 
@@ -93,6 +102,7 @@ namespace BMS
 	bool Employee::RemoveEmployee(nlohmann::json& employee)
 	{
 		Database db;
+		EmployeeSQL eSQL;
 		sql::Connection* con = db.ConnectDB();
 
 		// Make sure we have a valid database connection
@@ -109,6 +119,14 @@ namespace BMS
 			return false;
 		}
 
+		// Make sure the employee table exists
+		if (!eSQL.CheckEmployeeTable(con))
+		{
+			BMS_ERROR("Could not find or create 'employee' table in database.");
+
+			return false;
+		}
+
 		// TODO: process employee removal
 
 		return true;
@@ -120,6 +138,7 @@ namespace BMS
 	bool Employee::UpdateEmployee(nlohmann::json& employee)
 	{
 		Database db;
+		EmployeeSQL eSQL;
 		sql::Connection* con = db.ConnectDB();
 
 		// Make sure we have a valid database connection
@@ -132,6 +151,14 @@ namespace BMS
 		{
 			BMS_ERROR("Couldn't connect to the database");
 			db.DisconnectDB(con);
+
+			return false;
+		}
+
+		// Make sure the employee table exists
+		if (!eSQL.CheckEmployeeTable(con))
+		{
+			BMS_ERROR("Could not find or create 'employee' table in database.");
 
 			return false;
 		}
@@ -161,6 +188,14 @@ namespace BMS
 		{
 			BMS_ERROR("Couldn't connect to the database");
 			db.DisconnectDB(con);
+
+			return false;
+		}
+
+		// Make sure the employee table exists
+		if (!eSQL.CheckEmployeeTable(con))
+		{
+			BMS_ERROR("Could not find or create 'employee' table in database.");
 
 			return false;
 		}
