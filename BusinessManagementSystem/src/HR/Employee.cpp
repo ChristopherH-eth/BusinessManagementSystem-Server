@@ -69,7 +69,6 @@ namespace BMS
 		std::string empIdStr = employee["empId"].dump();
 
 		// Convert numeric values
-		// TODO: Remove quotes from strings
 		int empId = stoi(empIdStr);
 		float salary = stof(salaryStr);
 

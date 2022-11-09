@@ -14,37 +14,79 @@ namespace BMS
 
 	bool EmployeeSQL::CheckEmployeeTable(sql::Connection*& con)
 	{
+		sql::Statement* stmt;				// MySQL statement to be executed
+		sql::ResultSet* res;				// MySQL result set
+		con->setSchema("bms");				// Set schema we want to interact with
+		stmt = con->createStatement();		// Define our query statement
+
+		// Query strings
+		std::string selectLimit = "SELECT * FROM employees LIMIT 1";
+		std::string createTable = "CREATE TABLE `employees` (\
+			`empId` INT NOT NULL,\
+			`firstName` VARCHAR(45) NOT NULL,\
+			`lastName` VARCHAR(45) NOT NULL,\
+			`birthDate` VARCHAR(45) NOT NULL,\
+			`age` INT NOT NULL,\
+			`position` VARCHAR(45) NOT NULL,\
+			`salary` FLOAT NOT NULL,\
+			`username` VARCHAR(45) DEFAULT NULL,\
+			`password` VARCHAR(45) DEFAULT NULL,\
+			PRIMARY KEY(`empId`))";
+
+		BMS_TRACE("Checking for 'employees' table in database...");
+
 		try
 		{
-			sql::Statement* stmt;				// MySQL statement to be executed
-			//sql::ResultSet* res;				// MySQL result set
-			con->setSchema("bms");				// Set schema we want to interact with
+			res = stmt->executeQuery(selectLimit);
 
-			// Define our query statement
-			stmt = con->createStatement();
-			//res = stmt->executeQuery("SELECT * FROM employees LIMIT 1");
+			// If the result set is not a nullptr, the table exists
+			if (res != nullptr)
+			{
+				BMS_TRACE("'employees' database table exists");
 
-			/*if (res->next())
+				delete res;
+				delete stmt;
+
 				return true;
+			}
+		}
+		catch (sql::SQLException& e) {
+			BMS_ERROR("# ERR: SQLException in {0} ({1}) on line {2}",
+				__FILE__, __FUNCTION__, __LINE__);
+			BMS_ERROR("# ERR: {0} (MySQL error code: {1}, SQLState: {2} )",
+				e.what(), e.getErrorCode(), e.getSQLState());
+			BMS_FILE_ERROR("# ERR: SQLException in {0} ({1}) on line {2}",
+				__FILE__, __FUNCTION__, __LINE__);
+			BMS_FILE_ERROR("# ERR: {0} (MySQL error code: {1}, SQLState: {2} )",
+				e.what(), e.getErrorCode(), e.getSQLState());
+		}
+
+		BMS_TRACE("'employees' table does not exist; creating table...");
+
+		// Couldn't find table; try to create it
+		try
+		{
+			bool tableCreated = stmt->execute(createTable);
+
+			// execute() returns false when creating the table, so return true
+			if (!tableCreated)
+			{
+				BMS_INFO("'employees' table successfully created");
+
+				delete res;
+				delete stmt;
+
+				return true;
+			}
 			else
-			{*/
-				stmt->executeQuery("CREATE TABLE `employees` (\
-				`empId` INT NOT NULL,\
-				`firstName` VARCHAR(45) NOT NULL,\
-				`lastName` VARCHAR(45) NOT NULL,\
-				`birthDate` VARCHAR(45) NOT NULL,\
-				`age` INT NOT NULL,\
-				`position` VARCHAR(45) NOT NULL,\
-				`salary` FLOAT NOT NULL,\
-				`username` VARCHAR(45) DEFAULT NULL,\
-				`password` VARCHAR(45) DEFAULT NULL,\
-				PRIMARY KEY(`empId`))");
+			{
+				BMS_WARN("Could not create 'employees' table");
 
-				return true;
-			//}
+				delete res;
+				delete stmt;
 
-			// Couldn't find/create table
-			return false;
+				return false;
+			}
 		}
 		catch (sql::SQLException& e) {
 			BMS_ERROR("# ERR: SQLException in {0} ({1}) on line {2}",
@@ -64,14 +106,17 @@ namespace BMS
 	bool EmployeeSQL::DBAddEmployee(sql::Connection*& con, int empId, std::string& firstName, 
 		std::string& lastName, std::string& birthDate, int age, std::string& position, float salary)
 	{
+		// Query string
+		std::string addEmployee = "INSERT INTO employees(empId, firstName, lastName, birthDate, \
+			age, position, salary) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
 		try 
 		{
 			sql::PreparedStatement* pstmt;		// MySQL prepared statement
 			con->setSchema("bms");				// Set schema we want to interact with
 		
 			// Define our prepared statement
-			pstmt = con->prepareStatement("INSERT INTO employees(empId, firstName, lastName, birthDate, \
-											age, position, salary) VALUES (?, ?, ?, ?, ?, ?, ?)");
+			pstmt = con->prepareStatement(addEmployee);
 
 			// Set values for prepared statement
 			pstmt->setInt(1, empId);
@@ -106,6 +151,9 @@ namespace BMS
 	 */
 	bool EmployeeSQL::DBEmpSearch(sql::Connection*& con, nlohmann::json& employee, std::string& firstName)
 	{
+		// Query string
+		std::string empSearch = "SELECT * FROM employees WHERE firstName = ?";
+
 		try
 		{
 			nlohmann::json result;				// JSON object for search results
@@ -114,7 +162,7 @@ namespace BMS
 			con->setSchema("bms");				// Set schema we want to interact with
 
 			// Define our prepared statement
-			pstmt = con->prepareStatement("SELECT * FROM employees WHERE firstName = ?");
+			pstmt = con->prepareStatement(empSearch);
 
 			// Set values for prepared statement
 			pstmt->setString(1, firstName);
