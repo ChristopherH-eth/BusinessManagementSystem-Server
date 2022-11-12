@@ -96,7 +96,7 @@ namespace BMS
 			if (success)
 				BMS_INFO("Employee removed!");
 			else
-				BMS_ERROR("Failed to add employee");
+				BMS_ERROR("Failed to remove employee");
 
 			response = "removeEmployee function successfully called";
 			break;

@@ -56,6 +56,7 @@ namespace BMS
 		if (!eSQL.CheckEmployeeTable(con))
 		{
 			BMS_ERROR("Could not find or create 'employee' table in database.");
+			db.DisconnectDB(con);
 
 			return false;
 		}
@@ -103,13 +104,11 @@ namespace BMS
 		Database db;
 		EmployeeSQL eSQL;
 		sql::Connection* con = db.ConnectDB();
+		bool success = false;
 
 		// Make sure we have a valid database connection
 		if (con->isValid())
-		{
 			BMS_INFO("Successfully connected to the database!");
-			db.DisconnectDB(con);
-		}
 		else
 		{
 			BMS_ERROR("Couldn't connect to the database");
@@ -122,13 +121,37 @@ namespace BMS
 		if (!eSQL.CheckEmployeeTable(con))
 		{
 			BMS_ERROR("Could not find or create 'employee' table in database.");
+			db.DisconnectDB(con);
 
 			return false;
 		}
 
-		// TODO: process employee removal
+		// Get values from employee JSON object
+		std::string firstName = employee["firstName"].dump();
+		std::string lastName = employee["lastName"].dump();
+		std::string empIdStr = employee["empId"].dump();
 
-		return true;
+		// Convert numeric values
+		int empId = stoi(empIdStr);
+
+		// Attempt to remove an employee from the database
+		success = eSQL.DBRemoveEmployee(con, empId);
+
+		// Check if we successfully removed an employee
+		if (success)
+		{
+			BMS_INFO("Successfully removed employee: {0} {1}", firstName, lastName);
+			db.DisconnectDB(con);
+
+			return true;
+		}
+		else
+		{
+			BMS_ERROR("Failed to remove employee: {0} {1}", firstName, lastName);
+			db.DisconnectDB(con);
+
+			return false;
+		}
 	}
 
 	/**

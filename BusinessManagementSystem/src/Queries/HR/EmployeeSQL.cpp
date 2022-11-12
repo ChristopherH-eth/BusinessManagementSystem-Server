@@ -12,12 +12,15 @@
 namespace BMS
 {
 
+	/**
+	 * @brief The CheckEmployeeTable() function makes sure the 'employees' table exists.
+	 */
 	bool EmployeeSQL::CheckEmployeeTable(sql::Connection*& con)
 	{
-		sql::Statement* stmt;				// MySQL statement to be executed
-		sql::ResultSet* res;				// MySQL result set
-		con->setSchema("bms");				// Set schema we want to interact with
-		stmt = con->createStatement();		// Define our query statement
+		sql::Statement* stmt = nullptr;			// MySQL statement to be executed
+		sql::ResultSet* res = nullptr;			// MySQL result set
+		con->setSchema("bms");					// Set schema we want to interact with
+		stmt = con->createStatement();			// Define our query statement
 
 		// Query strings
 		std::string selectLimit = "SELECT * FROM employees LIMIT 1";
@@ -97,52 +100,11 @@ namespace BMS
 				__FILE__, __FUNCTION__, __LINE__);
 			BMS_FILE_ERROR("# ERR: {0} (MySQL error code: {1}, SQLState: {2} )",
 				e.what(), e.getErrorCode(), e.getSQLState());
-		}
-	}
 
-	/**
-	 * @brief The DBAddEmployee() function adds an employee to the MySQL database employees table.
-	 */
-	bool EmployeeSQL::DBAddEmployee(sql::Connection*& con, int empId, std::string& firstName, 
-		std::string& lastName, std::string& birthDate, int age, std::string& position, float salary)
-	{
-		// Query string
-		std::string addEmployee = "INSERT INTO employees(empId, firstName, lastName, birthDate, \
-			age, position, salary) VALUES (?, ?, ?, ?, ?, ?, ?)";
+			delete res;
+			delete stmt;
 
-		try 
-		{
-			sql::PreparedStatement* pstmt;		// MySQL prepared statement
-			con->setSchema("bms");				// Set schema we want to interact with
-		
-			// Define our prepared statement
-			pstmt = con->prepareStatement(addEmployee);
-
-			// Set values for prepared statement
-			pstmt->setInt(1, empId);
-			pstmt->setString(2, firstName);
-			pstmt->setString(3, lastName);
-			pstmt->setString(4, birthDate);
-			pstmt->setInt(5, age);
-			pstmt->setString(6, position);
-			pstmt->setDouble(7, salary);
-
-			// Execute our prepared statement
-			pstmt->executeQuery();
-
-			delete pstmt;
-
-			return true;
-		}
-		catch (sql::SQLException& e) {
-			BMS_ERROR("# ERR: SQLException in {0} ({1}) on line {2}", 
-				__FILE__, __FUNCTION__, __LINE__);
-			BMS_ERROR("# ERR: {0} (MySQL error code: {1}, SQLState: {2} )", 
-				e.what(), e.getErrorCode(), e.getSQLState());
-			BMS_FILE_ERROR("# ERR: SQLException in {0} ({1}) on line {2}",
-				__FILE__, __FUNCTION__, __LINE__);
-			BMS_FILE_ERROR("# ERR: {0} (MySQL error code: {1}, SQLState: {2} )",
-				e.what(), e.getErrorCode(), e.getSQLState());
+			return false;
 		}
 	}
 
@@ -154,13 +116,13 @@ namespace BMS
 		// Query string
 		std::string empSearch = "SELECT * FROM employees WHERE firstName = ?";
 
+		nlohmann::json result;							// JSON object for search results
+		sql::PreparedStatement* pstmt = nullptr;		// MySQL prepared statement
+		sql::ResultSet* res = nullptr;					// Result set from query
+		con->setSchema("bms");							// Set schema we want to interact with
+
 		try
 		{
-			nlohmann::json result;				// JSON object for search results
-			sql::PreparedStatement* pstmt;		// MySQL prepared statement
-			sql::ResultSet* res;				// Result set from query
-			con->setSchema("bms");				// Set schema we want to interact with
-
 			// Define our prepared statement
 			pstmt = con->prepareStatement(empSearch);
 
@@ -205,6 +167,104 @@ namespace BMS
 				__FILE__, __FUNCTION__, __LINE__);
 			BMS_FILE_ERROR("# ERR: {0} (MySQL error code: {1}, SQLState: {2} )",
 				e.what(), e.getErrorCode(), e.getSQLState());
+
+			delete res;
+			delete pstmt;
+
+			return false;
+		}
+	}
+
+	/**
+	 * @brief The DBAddEmployee() function adds an employee to the MySQL database employees table.
+	 */
+	bool EmployeeSQL::DBAddEmployee(sql::Connection*& con, int empId, std::string& firstName, 
+		std::string& lastName, std::string& birthDate, int age, std::string& position, float salary)
+	{
+		// Query string
+		std::string addEmployee = "INSERT INTO employees(empId, firstName, lastName, birthDate, \
+			age, position, salary) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+		sql::PreparedStatement* pstmt = nullptr;		// MySQL prepared statement
+		con->setSchema("bms");							// Set schema we want to interact with
+
+		try 
+		{		
+			// Define our prepared statement
+			pstmt = con->prepareStatement(addEmployee);
+
+			// Set values for prepared statement
+			pstmt->setInt(1, empId);
+			pstmt->setString(2, firstName);
+			pstmt->setString(3, lastName);
+			pstmt->setString(4, birthDate);
+			pstmt->setInt(5, age);
+			pstmt->setString(6, position);
+			pstmt->setDouble(7, salary);
+
+			// Execute our prepared statement
+			pstmt->executeQuery();
+
+			delete pstmt;
+
+			return true;
+		}
+		catch (sql::SQLException& e) {
+			BMS_ERROR("# ERR: SQLException in {0} ({1}) on line {2}", 
+				__FILE__, __FUNCTION__, __LINE__);
+			BMS_ERROR("# ERR: {0} (MySQL error code: {1}, SQLState: {2} )", 
+				e.what(), e.getErrorCode(), e.getSQLState());
+			BMS_FILE_ERROR("# ERR: SQLException in {0} ({1}) on line {2}",
+				__FILE__, __FUNCTION__, __LINE__);
+			BMS_FILE_ERROR("# ERR: {0} (MySQL error code: {1}, SQLState: {2} )",
+				e.what(), e.getErrorCode(), e.getSQLState());
+
+			delete pstmt;
+
+			return false;
+		}
+	}
+
+	/**
+	* @brief The DBRemoveEmployee() function removes an employee from the MySQL database employees table.
+	*/
+	bool EmployeeSQL::DBRemoveEmployee(sql::Connection*& con, int empId)
+	{
+		// Query string
+		std::string deleteEmployee = "DELETE FROM employees WHERE empId = ?";
+
+		sql::PreparedStatement* pstmt = nullptr;		// MySQL prepared statement
+		con->setSchema("bms");							// Set schema we want to interact with
+
+		try
+		{
+			// Define our prepared statement
+			pstmt = con->prepareStatement(deleteEmployee);
+
+			// Set values for prepared statement
+			pstmt->setInt(1, empId);
+
+			// Execute our prepared statement
+			pstmt->executeQuery();
+
+			delete pstmt;
+
+			return true;
+		}
+		catch (sql::SQLException& e)
+		{
+			BMS_ERROR("# ERR: SQLException in {0} ({1}) on line {2}",
+				__FILE__, __FUNCTION__, __LINE__);
+			BMS_ERROR("# ERR: {0} (MySQL error code: {1}, SQLState: {2} )",
+				e.what(), e.getErrorCode(), e.getSQLState());
+			BMS_FILE_ERROR("# ERR: SQLException in {0} ({1}) on line {2}",
+				__FILE__, __FUNCTION__, __LINE__);
+			BMS_FILE_ERROR("# ERR: {0} (MySQL error code: {1}, SQLState: {2} )",
+				e.what(), e.getErrorCode(), e.getSQLState());
+
+			delete pstmt;
+
+			return false;
 		}
 	}
 
